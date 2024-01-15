@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Cadastramento de Clientes - WeFix</title>
+        <title>Cadastramento de Equipes - WeFix</title>
         <!-- Pra Colocar a logo na aba -->
         <link rel="icon" href="logo.png">
         <!-- Importando estilos do Bootstrap -->
@@ -64,7 +64,7 @@
                     </li>
                 </ul>
                 <!-- Barra de Pesquisa -->
-                <form class="form-inline" onsubmit="event.preventDefault(); displayClientesPorNome();">
+                <form class="form-inline" onsubmit="event.preventDefault(); displayEquipesPorNome();">
                     <input class="form-control mr-sm-2" type="search" id="barraPesquisa" placeholder="Buscar...">
                     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
                 </form>
@@ -72,12 +72,12 @@
         </nav>
     <div class="container">
         <br>
-        <h1 class="text-center">Cadastramento de Clientes</h1>
-        <!-- Formulário para adicionar/editar Clientes -->
-        <form id="clienteForm" class="my-4">
+        <h1 class="text-center">Cadastramento de Equipes</h1>
+        <!-- Formulário para adicionar/editar Equipes -->
+        <form id="equipeForm" class="my-4">
             <div class="form-group">
                 <!-- Campo de Nome -->
-                <label for="nome">Nome Completo:</label>
+                <label for="nome">Nome Da Equipe:</label>
                 <input
                 type="text"
                 id="nome"
@@ -88,7 +88,7 @@
             </div>
             <div class="form-group">
                 <!-- Campo de E-mail -->
-                <label for="email">Email:</label>
+                <label for="email">Email do Responsável:</label>
                 <input
                 type="email"
                 id="email"
@@ -110,7 +110,7 @@
             </div>
             <div class="form-group">
                 <!-- Campo de CPF -->
-                <label for="cpf">CPF:</label>
+                <label for="cpf">CPF do responsável:</label>
                 <input
                 type="number"
                 max="99999999999"
@@ -121,13 +121,28 @@
             />
             </div>
             <div class="form-group">
-                <!-- Campo de Endereço -->
-                <label for="endereco">Endereço:</label>
-                <textarea class="form-control"
-                id="endereco"
-                rows="3"
-                placeholder="Endereço"></textarea>
+                <!-- Campo de Quantidade -->
+                <label for="quantidade">Quantidade:</label>
+                <input
+                type="number"
+                id="quantidade"
+                class="form-control"
+                placeholder="Quantidade"
+                required
+                />
             </div>
+            <div class="form-group">
+                <!-- Campo de Especialidade -->
+                <label for="especialidade">Especialidade:</label>
+                <input
+                type="text"
+                id="especialidade"
+                class="form-control"
+                placeholder="Especialidade"
+                required
+                />
+            </div>
+           
                 <!-- Botão para Cadastrar-se -->
                 <button 
                 type="submit" 
@@ -143,7 +158,7 @@
                 >Cancelar
                 </button>
         </form>
-        <!-- Tabela para listar Clientes -->
+        <!-- Tabela para listar Equipes -->
         <table class="table table-bordered table-hover" style="background-color: #a9b8e6; border: 2px solid #5f626e;">
             <thead>
             <tr>
@@ -151,141 +166,146 @@
             <th style="border: 2px solid #5f626e";>E-mail</th>
             <th style="border: 2px solid #5f626e";>Senha</th>
             <th style="border: 2px solid #5f626e";>CPF</th>
-            <th style="border: 2px solid #5f626e";>Endereço</th>
+            <th style="border: 2px solid #5f626e";>Quantidade</th>
+            <th style="border: 2px solid #5f626e";>Especialidade</th>
             </tr>
             </thead>
-            <tbody id="clientesTable"></tbody>
+            <tbody id="equipesTable"></tbody>
         </table>
         <script>
-            // Array para armazenar os clientes do servidor
-            let clientes = [];
-            // ID do cliente em edição
-            let clienteAtual = null;
+            // Array para armazenar as equipes do servidor
+            let equipes = [];
+            // ID da equipe em edição
+            let equipeAtual = null;
 
-            // Função para exibir produtos na tabela
-            function displayClientes() {
-                const tbody = document.getElementById("clientesTable");
+            // Função para exibir equipes na tabela
+            function displayEquipes() {
+                const tbody = document.getElementById("equipesTable");
                 tbody.innerHTML = "";
-                clientes.forEach((cliente) => {
+                equipes.forEach((equipe) => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
                     
-                    <td style="border: 2px solid #5f626e";>${cliente.nome}</td>
-                    <td style="border: 2px solid #5f626e";>${cliente.email}</td>
-                    <td style="border: 2px solid #5f626e";>${cliente.senha}</td>
-                    <td style="border: 2px solid #5f626e";>${cliente.cpf}</td>
-                    <td style="border: 2px solid #5f626e";>${cliente.endereco}</td>
+                    <td style="border: 2px solid #5f626e";>${equipe.nome}</td>
+                    <td style="border: 2px solid #5f626e";>${equipe.email}</td>
+                    <td style="border: 2px solid #5f626e";>${equipe.senha}</td>
+                    <td style="border: 2px solid #5f626e";>${equipe.cpf}</td>
+                    <td style="border: 2px solid #5f626e";>${equipe.quantidade}</td>
+                    <td style="border: 2px solid #5f626e";>${equipe.especialidade}</td>
                     <td style="border: 2px solid #5f626e";>
                     <button class="btn btn-warning btn-sm"
 
-                    onclick="editCliente(${cliente.cpf})">Alterar</button>
+                    onclick="editEquipe(${equipe.cpf})">Alterar</button>
                             
                     <button class="btn btn-danger btn-sm"
-                    onclick="deleteCliente(${cliente.cpf})">Remover</button>
+                    onclick="deleteEquipe(${equipe.cpf})">Remover</button>
 
                     </td>
                     `;
                     tbody.appendChild(row);
                 });
             }
-            // Função para mostrar clientes caso seja procurado pela Barra de Pesquisa
-            function displayClientesPorNome() {
-                const tbody = document.getElementById("clientesTable");
+            // Função para mostrar equipes caso seja procurado pela Barra de Pesquisa
+            function displayEquipesPorNome() {
+                const tbody = document.getElementById("equipesTable");
                 tbody.innerHTML = "";
 
                 // Obtenha o nome da barra de pesquisa
                 const nomePesquisa = document.getElementById("barraPesquisa").value;
 
-                // Filtrar clientes que têm o mesmo nome que o nome da pesquisa
-                const clientesFiltrados = clientes.filter(c => c.nome == nomePesquisa);
+                // Filtrar equipes que têm o mesmo nome que o nome da pesquisa
+                const equipesFiltrados = equipes.filter(e => e.cpf == nomePesquisa);
 
-                clientesFiltrados.forEach((cliente) => {
+                equipesFiltrados.forEach((equipe) => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
-                        <td style="border: 2px solid #5f626e";>${cliente.nome}</td>
-                        <td style="border: 2px solid #5f626e";>${cliente.email}</td>
-                        <td style="border: 2px solid #5f626e";>${cliente.senha}</td>
-                        <td style="border: 2px solid #5f626e";>${cliente.cpf}</td>
-                        <td style="border: 2px solid #5f626e";>${cliente.endereco}</td>
+                        <td style="border: 2px solid #5f626e";>${equipe.nome}</td>
+                        <td style="border: 2px solid #5f626e";>${equipe.email}</td>
+                        <td style="border: 2px solid #5f626e";>${equipe.senha}</td>
+                        <td style="border: 2px solid #5f626e";>${equipe.cpf}</td>
+                        <td style="border: 2px solid #5f626e";>${equipe.quantidade}</td>
+                        <td style="border: 2px solid #5f626e";>${equipe.especialidade}</td>
                         <td style="border: 2px solid #5f626e";>
-                            <button class="btn btn-warning btn-sm" onclick="editCliente(${cliente.cpf})">Alterar</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteCliente(${cliente.cpf})">Remover</button>
+                            <button class="btn btn-warning btn-sm" onclick="editEquipe(${equipe.cpf})">Alterar</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteEquipe(${equipe.cpf})">Remover</button>
                         </td>
                     `;
                     tbody.appendChild(row);
                 });
             }
-            // Função para carregar um cliente no formulário para edição
-            function editCliente(cpf) {
-                clienteAtual = cpf;
-                const cliente = clientes.find((c) => c.cpf === cpf.toString());
-                document.getElementById("nome").value = cliente.nome;
-                document.getElementById("email").value = cliente.email;
-                document.getElementById("senha").value = cliente.senha;
-                document.getElementById("cpf").value = cliente.cpf;
-                document.getElementById("endereco").value = cliente.endereco;
+            // Função para carregar uma equipe no formulário para edição
+            function editEquipe(cpf) {
+                equipeAtual = cpf;
+                const equipe = equipes.find((e) => e.cpf == cpf.toString());
+                document.getElementById("nome").value = equipe.nome;
+                document.getElementById("email").value = equipe.email;
+                document.getElementById("senha").value = equipe.senha;
+                document.getElementById("cpf").value = equipe.cpf;
+                document.getElementById("quantidade").value = equipe.quantidade;
+                document.getElementById("especialidade").value = equipe.especialidade;
                 // Mostra o botão cancelar durante a edição
                 document.getElementById("cancelBtn").style.display = "inline-block";
             }
-            // Função para remover Cliente do servidor e atualizar a lista
-            function deleteCliente(cpf) {
-                fetch("http://localhost:3002/clientes/" + cpf, {
+            // Função para remover Equipe do servidor e atualizar a lista
+            function deleteEquipe(cpf) {
+                fetch("http://localhost:3002/equipes/" + cpf, {
                 method: "DELETE"
                 })
                 .then(() => {
-                    clientes = clientes.filter((c) => c.cpf !== cpf.toString());
-                    displayClientes();
+                    equipes = equipes.filter((e) => e.cpf != cpf.toString());
+                    displayEquipes();
                 })
                 .catch((error) => console.error("Error:", error));
             }
             // Evento para lidar com o envio do formulário
             document
-            .getElementById("clienteForm")
+            .getElementById("equipeForm")
             .addEventListener("submit", function (event) {
             event.preventDefault();
             // Coleta os valores do formulário
-            const cliente = {
-                cpf: document.getElementById("cpf").value,
+            const equipe = {
+                cpf: parseInt(document.getElementById("cpf").value),
                 nome: document.getElementById("nome").value,
                 email: document.getElementById("email").value,
                 senha: document.getElementById("senha").value,
-                endereco: document.getElementById("endereco").value,
+                quantidade: parseInt(document.getElementById("quantidade").value),
+                especialidade: document.getElementById("especialidade").value,
             };
-            if (clienteAtual) {
+            if (equipeAtual) {
                 // Se estiver editando
-                fetch("http://localhost:3002/clientes/" + clienteAtual, {
+                fetch("http://localhost:3002/equipes/" + equipeAtual, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(cliente),
+                body: JSON.stringify(equipe),
                 })
                 .then((response) => response.json())
                 .then((data) => {
                     console.log(data);
-                    const index = clientes.findIndex((c) => c.cpf === clienteAtual.toString());
-                    clientes[index] = data;
-                    displayClientes();
+                    const index = equipes.findIndex((e) => e.cpf == equipeAtual.toString());
+                    equipes[index] = data;
+                    displayEquipes();
                     // Limpa o formulário e reseta o produto em edição
-                    document.getElementById("clienteForm").reset();
-                    clienteAtual = null;
+                    document.getElementById("equipeForm").reset();
+                    equipeAtual = null;
                     document.getElementById("cancelBtn").style.display = "none";
                 })
                 .catch((error) => console.error("Error:", error));
             } else {
-            // Se for um novo cliente
-            fetch("http://localhost:3002/clientes", {
+            // Se for uma nova equipe
+            fetch("http://localhost:3002/equipes", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(cliente),
+                body: JSON.stringify(equipe),
             })
             .then((response) => response.json())
             .then((data) => {
-                clientes.push(data);
-                displayClientes();
-                document.getElementById("clienteForm").reset();
+                equipes.push(data);
+                displayEquipes();
+                document.getElementById("equipeForm").reset();
             })
             .catch((error) => console.error("Error:", error));
             }
@@ -294,16 +314,16 @@
             document
             .getElementById("cancelBtn")
             .addEventListener("click", function () {
-                clienteAtual = null;
-                document.getElementById("clienteForm").reset();
+                equipeAtual = null;
+                document.getElementById("equipeForm").reset();
                 this.style.display = "none";
             });
-            // Carrega clientes do servidor ao carregar a página
-            fetch("http://localhost:3002/clientes/")
+            // Carrega Equipes do servidor ao carregar a página
+            fetch("http://localhost:3002/equipes/")
             .then((response) => response.json())
             .then((data) => {
-                clientes = data;
-                displayClientes();
+                equipes = data;
+                displayEquipes();
             })
             .catch((error) => console.error("Error:", error));
         </script>
